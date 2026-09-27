@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kazuma Shop — Seller Alerts</title>
+<style>
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #0f1117;
+        color: #f5f7fb;
+        display: flex;
+        justify-content: center;
+        padding: 28px 16px;
+    }
+    .container { width: 100%; max-width: 760px; }
+    .header {
+        margin-bottom: 18px;
+    }
+    .brand {
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: .3px;
+    }
+    .subtitle {
+        margin-top: 6px;
+        color: #9da5b4;
+        font-size: 14px;
+    }
+    .card {
+        background: #171a22;
+        border: 1px solid #292e39;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+    .status-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+    }
+    .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #777;
+    }
+    .dot.active { background: #39d98a; }
+    .dot.waiting { background: #f2b84b; }
+    button {
+        border: 0;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+    #enableAlerts {
+        background: #fff;
+        color: #111;
+    }
+    #enableAlerts.enabled {
+        background: #39d98a;
+        color: #07150e;
+    }
+    .small {
+        color: #9da5b4;
+        font-size: 13px;
+        line-height: 1.5;
+        margin-top: 12px;
+    }
+    .order {
+        display: none;
+    }
+    .order.show {
+        display: block;
+    }
+    .new-badge {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 999px;
+        background: #39d98a;
+        color: #07150e;
+        font-size: 11px;
+        font-weight: 900;
+        margin-bottom: 12px;
+    }
+    .order-id {
+        font-size: 25px;
+        font-weight: 900;
+        margin-bottom: 18px;
+    }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+    .item {
+        background: #10131a;
+        border: 1px solid #292e39;
+        border-radius: 11px;
+        padding: 12px;
+    }
+    .label {
+        color: #8e97a8;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .7px;
+        margin-bottom: 5px;
+    }
+    .value {
+        font-size: 15px;
+        font-weight: 700;
+        word-break: break-word;
+    }
+    .reference {
+        font-family: Consolas, monospace;
+        letter-spacing: .5px;
+    }
+    .footer {
+        color: #737c8c;
+        text-align: center;
+        font-size: 12px;
+        padding: 4px 0 20px;
+    }
+    @media (max-width: 560px) {
+        .grid { grid-template-columns: 1fr; }
+        .brand { font-size: 24px; }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="brand">Kazuma Shop — Seller Alerts</div>
+        <div class="subtitle">Keep this page open to receive new-order alerts.</div>
+    </div>
+
+    <div class="card">
+        <div class="status-row">
+            <div class="status">
+                <span id="statusDot" class="dot waiting"></span>
+                <span id="statusText">Alerts not enabled</span>
+            </div>
+            <button id="enableAlerts" type="button" onclick="enableAlerts()">ENABLE ALERTS</button>
+        </div>
+        <div class="small">
+            Click the button once to allow browser notifications and unlock the order sound.
+            The page checks for new orders automatically every 10 seconds.
+        </div>
+    </div>
+
+    <div id="orderCard" class="card order">
+        <div class="new-badge">NEW ORDER</div>
+        <div id="orderNumber" class="order-id">—</div>
+        <div class="grid">
+            <div class="item">
+                <div class="label">Roblox Username</div>
+                <div id="username" class="value">—</div>
+            </div>
+            <div class="item">
+                <div class="label">Product</div>
+                <div id="product" class="value">—</div>
+            </div>
+            <div class="item">
+                <div class="label">Item</div>
+                <div id="item" class="value">—</div>
+            </div>
+            <div class="item">
+                <div class="label">Amount Paid</div>
+                <div id="amount" class="value">—</div>
+            </div>
+            <div class="item">
+                <div class="label">Payment</div>
+                <div id="payment" class="value">—</div>
+            </div>
+            <div class="item">
+                <div class="label">GCash Reference</div>
+                <div id="reference" class="value reference">—</div>
+            </div>
+            <div class="item">
+                <div class="label">Status</div>
+                <div id="orderStatus" class="value">—</div>
+            </div>
+            <div class="item">
+                <div class="label">Order Date</div>
+                <div id="date" class="value">—</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Kazuma Shop Seller Alert System
+    </div>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzWr0qcUXnujEEOZAAURrQG9F4sLgZryOMsxszByyitHk7iWMNjwDIYKjBKhwuu0gJ5/exec";
+const POLL_MS = 10000;
+
+let alertsEnabled = false;
+let firstCheck = true;
+let lastSeenOrderId = localStorage.getItem("kazumaSellerLastOrderId") || "";
+let audioContext = null;
+
+function setStatus(text, active) {
+    document.getElementById("statusText").textContent = text;
+    document.getElementById("statusDot").className = "dot " + (active ? "active" : "waiting");
+}
+
+function initAudio() {
+    try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioContext.state === "suspended") {
+            audioContext.resume();
+        }
+    } catch (error) {
+        audioContext = null;
+    }
+}
+
+function playAlertSound() {
+    if (!audioContext) return;
+
+    try {
+        const now = audioContext.currentTime;
+
+        [0, 0.18, 0.36].forEach(function(offset, index) {
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+
+            oscillator.type = "sine";
+            oscillator.frequency.value = index === 1 ? 880 : 660;
+
+            gain.gain.setValueAtTime(0.0001, now + offset);
+            gain.gain.exponentialRampToValueAtTime(0.22, now + offset + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.15);
+
+            oscillator.connect(gain);
+            gain.connect(audioContext.destination);
+
+            oscillator.start(now + offset);
+            oscillator.stop(now + offset + 0.16);
+        });
+    } catch (error) {}
+}
+
+async function enableAlerts() {
+    initAudio();
+
+    if ("Notification" in window) {
+        try {
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+                alertsEnabled = true;
+                document.getElementById("enableAlerts").textContent = "ALERTS ENABLED";
+                document.getElementById("enableAlerts").classList.add("enabled");
+                setStatus("Alerts are active", true);
+                playAlertSound();
+                checkForNewOrder();
+                return;
+            }
+        } catch (error) {}
+    }
+
+    alertsEnabled = true;
+    document.getElementById("enableAlerts").textContent = "SOUND ALERTS ENABLED";
+    document.getElementById("enableAlerts").classList.add("enabled");
+    setStatus("Sound alerts are active", true);
+    playAlertSound();
+    checkForNewOrder();
+}
+
+function showBrowserNotification(order) {
+    if (!("Notification" in window) || Notification.permission !== "granted") {
+        return;
+    }
+
+    const notification = new Notification("New Kazuma Shop Order!", {
+        body: order.orderNumber + " • " + order.username + " • " + order.item,
+        tag: "kazuma-new-order"
+    });
+
+    notification.onclick = function() {
+        window.focus();
+        notification.close();
+    };
+}
+
+function showOrder(order) {
+    document.getElementById("orderCard").classList.add("show");
+    document.getElementById("orderNumber").textContent = order.orderNumber || "—";
+    document.getElementById("username").textContent = order.username || "—";
+    document.getElementById("product").textContent = order.product || "—";
+    document.getElementById("item").textContent = order.item || "—";
+    document.getElementById("amount").textContent =
+        order.amount !== undefined && order.amount !== null
+            ? "₱" + Number(order.amount).toLocaleString()
+            : "—";
+    document.getElementById("payment").textContent = order.payment || "—";
+    document.getElementById("reference").textContent = order.reference || "—";
+    document.getElementById("orderStatus").textContent = order.status || "—";
+    document.getElementById("date").textContent = order.date || "—";
+}
+
+async function checkForNewOrder() {
+    try {
+        const response = await fetch(
+            API_URL + "?action=latestOrder&t=" + Date.now(),
+            { cache: "no-store" }
+        );
+
+        const data = await response.json();
+
+        if (!data || !data.success || !data.found || !data.order) {
+            return;
+        }
+
+        const order = data.order;
+        showOrder(order);
+
+        if (firstCheck) {
+            lastSeenOrderId = order.orderNumber || "";
+            localStorage.setItem("kazumaSellerLastOrderId", lastSeenOrderId);
+            firstCheck = false;
+            return;
+        }
+
+        if (order.orderNumber && order.orderNumber !== lastSeenOrderId) {
+            lastSeenOrderId = order.orderNumber;
+            localStorage.setItem("kazumaSellerLastOrderId", lastSeenOrderId);
+
+            if (alertsEnabled) {
+                playAlertSound();
+                showBrowserNotification(order);
+            }
+        }
+    } catch (error) {
+        setStatus(alertsEnabled ? "Alerts active — waiting for connection" : "Unable to check orders", alertsEnabled);
+    }
+}
+
+setInterval(checkForNewOrder, POLL_MS);
+checkForNewOrder();
+</script>
+</body>
+</html>
