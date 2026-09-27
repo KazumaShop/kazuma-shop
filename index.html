@@ -5825,6 +5825,7 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
 
         /* =========================================================
            FREE CLIENT-SIDE GCash REFERENCE OCR
+           Mobile-friendly preprocessing + OCR
         ========================================================= */
 
         let referenceOcrBusy = false;
@@ -5865,81 +5866,259 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
 
         function extractReferenceNumber(text) {
             let normalized = String(text || "")
-                .replace(/[|]/g, "1")
                 .replace(/[\u2013\u2014]/g, "-")
-                .replace(/\s+/g, " ")
+                .replace(/[\r\n]+/g, "\n")
+                .replace(/[ \t]+/g, " ")
                 .trim();
 
             if (!normalized) return "";
 
-            // GCash receipts commonly show the reference like:
-            // "Ref No. 0045 469 283232"
-            // OCR may keep those spaces, so capture several numeric groups
-            // after the Ref No./Reference label and join them together.
+            // GCash commonly prints: "Ref No. 0045 469 283232".
+            // OCR can confuse O/o with 0 and I/l/| with 1 near the number.
             const label = /(?:reference(?:\s*number)?|ref(?:erence)?\s*(?:no|number)|ref\.?\s*no\.?)/i;
             const labelMatch = normalized.match(label);
 
             if (labelMatch) {
-                const afterLabel = normalized.slice(labelMatch.index + labelMatch[0].length);
+                const afterLabel = normalized.slice(
+                    labelMatch.index + labelMatch[0].length,
+                    labelMatch.index + labelMatch[0].length + 140
+                );
 
-                // First try the exact GCash-style numeric groups.
-                const groups = afterLabel.match(/(?:^|[^0-9])([0-9]{2,8}(?:\s+[0-9]{2,8}){1,5})(?![0-9])/);
-                if (groups && groups[1]) {
-                    const joined = groups[1].replace(/\s+/g, "");
-                    if (joined.length >= 8 && joined.length <= 20) return joined;
+                const cleanedAfterLabel = afterLabel
+                    .replace(/[Oo]/g, "0")
+                    .replace(/[Il|]/g, "1");
+
+                // First handle grouped numbers such as 0045 469 283232.
+                const grouped = cleanedAfterLabel.match(
+                    /(?:^|[^0-9])([0-9]{2,8}(?:\s+[0-9]{2,8}){1,5})(?![0-9])/m
+                );
+                if (grouped && grouped[1]) {
+                    const joined = grouped[1].replace(/\s+/g, "");
+                    if (joined.length >= 10 && joined.length <= 20) return joined;
                 }
 
-                // Fallback: collect individual numeric chunks shortly after the label.
-                const nearby = afterLabel.slice(0, 80);
-                const chunks = nearby.match(/\d+/g) || [];
+                // Also handle OCR that removes the spaces completely.
+                const compact = cleanedAfterLabel.match(/\d{10,20}/);
+                if (compact) return compact[0];
+
+                // Last label-based fallback: combine nearby numeric chunks.
+                const chunks = cleanedAfterLabel.match(/\d+/g) || [];
                 const joined = chunks.join("");
-                if (joined.length >= 8 && joined.length <= 20) return joined;
+                if (joined.length >= 10 && joined.length <= 20) return joined;
             }
 
-            // Fallback for OCR that removes the label or spaces entirely.
-            const numbers = normalized.match(/\d{8,20}/g) || [];
-            return numbers.length ? numbers.sort((a,b) => b.length - a.length)[0] : "";
+            // If the label was missed, look for the common GCash grouped pattern.
+            const groupedFallback = normalized.match(
+                /\b(\d{3,5})\s+(\d{2,5})\s+(\d{4,8})\b/
+            );
+            if (groupedFallback) {
+                const joined = groupedFallback[1] + groupedFallback[2] + groupedFallback[3];
+                if (joined.length >= 10 && joined.length <= 20) return joined;
+            }
+
+            // Final fallback for OCR that produces one long numeric token.
+            const numbers = normalized.match(/\b\d{10,20}\b/g) || [];
+            return numbers.length
+                ? numbers.sort((a, b) => b.length - a.length)[0]
+                : "";
+        }
+
+        function loadReferenceImage(file) {
+            return new Promise(function(resolve, reject) {
+                const url = URL.createObjectURL(file);
+                const img = new Image();
+
+                img.onload = function() {
+                    URL.revokeObjectURL(url);
+                    resolve(img);
+                };
+
+                img.onerror = function() {
+                    URL.revokeObjectURL(url);
+                    reject(new Error("Unable to read the receipt image."));
+                };
+
+                img.src = url;
+            });
+        }
+
+        function buildReferenceOCRCanvas(img, mode) {
+            const sourceWidth = img.naturalWidth || img.width;
+            const sourceHeight = img.naturalHeight || img.height;
+
+            if (!sourceWidth || !sourceHeight) {
+                throw new Error("Invalid receipt image dimensions.");
+            }
+
+            // Keep mobile memory usage reasonable while preserving enough detail
+            // for the small reference number text.
+            const maxDimension = 1800;
+            const scale = Math.min(1, maxDimension / Math.max(sourceWidth, sourceHeight));
+
+            let sx = 0;
+            let sy = 0;
+            let sw = sourceWidth;
+            let sh = sourceHeight;
+
+            // A second pass focuses on the middle/lower part where GCash receipts
+            // normally place the Ref No. This is especially useful on phone photos.
+            if (mode === "focus") {
+                sy = Math.floor(sourceHeight * 0.42);
+                sh = Math.floor(sourceHeight * 0.43);
+            }
+
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.max(1, Math.round(sw * scale));
+            canvas.height = Math.max(1, Math.round(sh * scale));
+
+            const ctx = canvas.getContext("2d", { willReadFrequently: true });
+            if (!ctx) throw new Error("Canvas is not supported on this device.");
+
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = "high";
+            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            // Grayscale + contrast enhancement. This removes much of the blue UI
+            // background and makes the black receipt text easier for OCR to read.
+            const contrast = 1.55;
+            const intercept = 128 * (1 - contrast);
+
+            for (let i = 0; i < data.length; i += 4) {
+                const gray =
+                    0.299 * data[i] +
+                    0.587 * data[i + 1] +
+                    0.114 * data[i + 2];
+
+                let value = gray * contrast + intercept;
+                value = Math.max(0, Math.min(255, value));
+
+                data[i] = value;
+                data[i + 1] = value;
+                data[i + 2] = value;
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+            return canvas;
+        }
+
+        async function runReferenceOCR(worker, image, progressLabel) {
+            const result = await worker.recognize(image);
+            const text = result && result.data ? result.data.text || "" : "";
+            if (progressLabel) {
+                console.log("GCash OCR pass:", progressLabel, text);
+            }
+            return text;
         }
 
         async function scanReferencePhoto(file) {
             if (!file || referenceOcrBusy) return;
+
             if (!file.type || !file.type.startsWith("image/")) {
                 setReferenceScanStatus("Please select an image file.", "error");
                 return;
             }
+
             const preview = document.getElementById("referencePreview");
             const input = document.getElementById("referencePhoto");
+
             if (preview) {
                 const oldUrl = preview.dataset.objectUrl;
                 if (oldUrl) URL.revokeObjectURL(oldUrl);
                 const objectUrl = URL.createObjectURL(file);
-                preview.src = objectUrl; preview.dataset.objectUrl = objectUrl; preview.classList.add("active");
+                preview.src = objectUrl;
+                preview.dataset.objectUrl = objectUrl;
+                preview.classList.add("active");
             }
+
+            detectedReferenceNumber = "";
             referenceOcrBusy = true;
             if (input) input.disabled = true;
+
+            let worker = null;
+
             try {
-                setReferenceScanStatus("Scanning receipt on your device... Please wait.", "");
-                if (typeof Tesseract === "undefined") throw new Error("OCR library could not be loaded.");
-                const result = await Tesseract.recognize(file, "eng", {
+                setReferenceScanStatus("Preparing receipt for mobile scanning...", "");
+
+                if (typeof Tesseract === "undefined") {
+                    throw new Error("OCR library could not be loaded.");
+                }
+
+                const img = await loadReferenceImage(file);
+
+                setReferenceScanStatus("Optimizing receipt for your device...", "");
+                const fullCanvas = buildReferenceOCRCanvas(img, "full");
+                const focusCanvas = buildReferenceOCRCanvas(img, "focus");
+
+                setReferenceScanStatus("Scanning receipt on your device...", "");
+
+                worker = await Tesseract.createWorker("eng", 1, {
                     logger: function(info) {
-                        if (info && info.status === "recognizing text" && typeof info.progress === "number") {
-                            setReferenceScanStatus("Scanning receipt... " + Math.round(info.progress * 100) + "%", "");
+                        if (
+                            info &&
+                            info.status === "recognizing text" &&
+                            typeof info.progress === "number"
+                        ) {
+                            setReferenceScanStatus(
+                                "Scanning receipt... " + Math.round(info.progress * 100) + "%",
+                                ""
+                            );
                         }
                     }
                 });
-                const detected = extractReferenceNumber(result && result.data ? result.data.text : "");
+
+                try {
+                    await worker.setParameters({
+                        tessedit_pageseg_mode: "6",
+                        preserve_interword_spaces: "1"
+                    });
+                } catch (parameterError) {
+                    console.warn("GCash OCR parameter setup skipped:", parameterError);
+                }
+
+                // Pass 1: entire receipt, enhanced for small text.
+                const fullText = await runReferenceOCR(worker, fullCanvas, "full");
+                let detected = extractReferenceNumber(fullText);
+
+                // Pass 2: focused crop for phones where the Ref No. is small.
                 if (!detected) {
-                    detectedReferenceNumber = "";
-                    setReferenceScanStatus("Reference number was not detected. Please try a clearer GCash receipt screenshot.", "error");
+                    setReferenceScanStatus("Looking more closely at the reference number...", "");
+                    const focusText = await runReferenceOCR(worker, focusCanvas, "focus");
+                    detected = extractReferenceNumber(focusText);
+                }
+
+                if (!detected) {
+                    setReferenceScanStatus(
+                        "Reference number was not detected. Please try the original GCash receipt screenshot.",
+                        "error"
+                    );
                     return;
                 }
 
                 detectedReferenceNumber = detected;
-                setReferenceScanStatus("✓ Receipt scanned successfully. Reference number detected automatically.", "success");
+                setReferenceScanStatus(
+                    "✓ Receipt scanned successfully. Reference number detected automatically.",
+                    "success"
+                );
             } catch (error) {
                 console.error("Reference OCR error:", error);
-                setReferenceScanStatus("We could not scan this image. Please try a clearer GCash receipt screenshot.", "error");
+                setReferenceScanStatus(
+                    "We could not scan this image on this device. Please try the original GCash receipt screenshot.",
+                    "error"
+                );
             } finally {
+                if (worker) {
+                    try {
+                        await worker.terminate();
+                    } catch (terminateError) {
+                        console.warn("GCash OCR worker cleanup error:", terminateError);
+                    }
+                }
+
                 referenceOcrBusy = false;
                 if (input) input.disabled = false;
             }
@@ -5948,6 +6127,7 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
         document.addEventListener("DOMContentLoaded", function() {
             const input = document.getElementById("referencePhoto");
             if (!input) return;
+
             input.addEventListener("change", function() {
                 const file = this.files && this.files[0];
                 if (file) scanReferencePhoto(file);
