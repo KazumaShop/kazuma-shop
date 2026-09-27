@@ -205,6 +205,10 @@
     </div>
 </div>
 
+<audio id="newOrderVoice" preload="auto">
+    <source src="./thank-you-order.wav" type="audio/wav">
+</audio>
+
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzWr0qcUXnujEEOZAAURrQG9F4sLgZryOMsxszByyitHk7iWMNjwDIYKjBKhwuu0gJ5/exec";
 const POLL_MS = 10000;
@@ -235,24 +239,38 @@ function playAlertSound() {
 
     try {
         const now = audioContext.currentTime;
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
 
-        [0, 0.18, 0.36].forEach(function(offset, index) {
-            const oscillator = audioContext.createOscillator();
-            const gain = audioContext.createGain();
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(880, now);
+        oscillator.frequency.exponentialRampToValueAtTime(660, now + 0.3);
 
-            oscillator.type = "sine";
-            oscillator.frequency.value = index === 1 ? 880 : 660;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.25, now + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
 
-            gain.gain.setValueAtTime(0.0001, now + offset);
-            gain.gain.exponentialRampToValueAtTime(0.22, now + offset + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.15);
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
 
-            oscillator.connect(gain);
-            gain.connect(audioContext.destination);
+        oscillator.start(now);
+        oscillator.stop(now + 0.37);
+    } catch (error) {}
+}
 
-            oscillator.start(now + offset);
-            oscillator.stop(now + offset + 0.16);
-        });
+function speakThankYouForYourOrder() {
+    const audio = document.getElementById("newOrderVoice");
+    if (!audio) return;
+
+    try {
+        audio.pause();
+        audio.currentTime = 0;
+
+        const playPromise = audio.play();
+
+        if (playPromise && typeof playPromise.catch === "function") {
+            playPromise.catch(function() {});
+        }
     } catch (error) {}
 }
 
@@ -343,6 +361,9 @@ async function checkForNewOrder() {
 
             if (alertsEnabled) {
                 playAlertSound();
+                setTimeout(function() {
+                    speakThankYouForYourOrder();
+                }, 400);
                 showBrowserNotification(order);
             }
         }
