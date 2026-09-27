@@ -1213,7 +1213,7 @@
             display: grid;
 
             grid-template-columns:
-                1fr 1fr;
+                1fr;
 
             gap: 20px;
 
@@ -3938,10 +3938,6 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
             <div class="order-layout">
 
 
-                <!-- =================================================
-                     LEFT SIDE
-                ================================================== -->
-
                 <div>
 
 
@@ -4003,136 +3999,7 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
                     </div>
 
 
-                    <!-- PAYMENT METHOD -->
 
-                    <div class="form-group">
-
-                        <label>
-                            Payment Method
-                        </label>
-
-                        <div class="payment-option">
-
-                            <div class="payment-icon">
-                                ₱
-                            </div>
-
-                            <div>
-
-                                <div class="payment-name">
-                                    GCash / InstaPay
-                                </div>
-
-                                <div class="payment-description">
-                                    Scan the QR code to pay.
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- REFERENCE NUMBER -->
-
-                    <div class="reference-box">
-
-                        <div class="reference-ocr">
-                            <div class="reference-ocr-title">📷 AUTO-SCAN FROM GCash RECEIPT</div>
-                            <div class="reference-ocr-text">
-                                Upload a screenshot or photo of your GCash receipt.
-                                The reference number will be detected on your device.
-                            </div>
-                            <input type="file" id="referencePhoto" class="reference-upload" accept="image/*">
-                            <div id="referenceScanStatus" class="reference-scan-status" aria-live="polite"></div>
-                            <img id="referencePreview" class="reference-preview" alt="GCash receipt preview">
-                        </div>
-
-                    </div>
-
-
-                    <!-- SUMMARY -->
-
-                    <div class="summary">
-
-                        <div class="summary-title">
-                            Order Summary
-                        </div>
-
-
-                        <div class="summary-row">
-
-                            <span>
-                                Roblox Username
-                            </span>
-
-                            <strong
-                                id="summaryUsername"
-                            >
-                                —
-                            </strong>
-
-                        </div>
-
-
-                        <div class="summary-row">
-
-                            <span id="summaryProductLabel">
-                                Robux
-                            </span>
-
-                            <strong
-                                id="summaryRobux"
-                            >
-                                20 Robux
-                            </strong>
-
-                        </div>
-
-
-                        <div class="summary-row">
-
-                            <span>
-                                Payment
-                            </span>
-
-                            <strong>
-                                GCash / InstaPay
-                            </strong>
-
-                        </div>
-
-
-                        <div class="summary-row summary-total">
-
-                            <span>
-                                Total
-                            </span>
-
-                            <strong
-                                id="summaryPrice"
-                            >
-                                ₱13
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- PLACE ORDER -->
-
-                    <button
-                        type="button"
-                        class="place-order"
-                        onclick="submitOrder()"
-                    >
-                        PLACE ORDER
-                    </button>
-
-
-                </div>
 
 
                 <!-- =================================================
@@ -4260,11 +4127,11 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
                                 </li>
 
                                 <li>
-                                    Copy the Reference Number from your receipt.
+                                    Upload your GCash receipt below.
                                 </li>
 
                                 <li>
-                                    Enter the Reference Number in the form.
+                                    The reference number will be detected automatically.
                                 </li>
 
                             </ol>
@@ -4273,6 +4140,110 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
 
 
                     </div>
+
+
+
+
+
+                    <!-- REFERENCE NUMBER -->
+
+                    <div class="reference-box">
+
+                        <div class="reference-ocr">
+                            <div class="reference-ocr-title">📷 AUTO-SCAN FROM GCash RECEIPT</div>
+                            <div class="reference-ocr-text">
+                                Upload a screenshot or photo of your GCash receipt.
+                                The reference number will be detected on your device.
+                            </div>
+                            <input type="file" id="referencePhoto" class="reference-upload" accept="image/*">
+                            <div id="referenceScanStatus" class="reference-scan-status" aria-live="polite"></div>
+                            <img id="referencePreview" class="reference-preview" alt="GCash receipt preview">
+                        </div>
+
+                    </div>
+
+
+                    <!-- SUMMARY -->
+
+                    <div class="summary">
+
+                        <div class="summary-title">
+                            Order Summary
+                        </div>
+
+
+                        <div class="summary-row">
+
+                            <span>
+                                Roblox Username
+                            </span>
+
+                            <strong
+                                id="summaryUsername"
+                            >
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-row">
+
+                            <span id="summaryProductLabel">
+                                Robux
+                            </span>
+
+                            <strong
+                                id="summaryRobux"
+                            >
+                                20 Robux
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-row">
+
+                            <span>
+                                Payment
+                            </span>
+
+                            <strong>
+                                GCash / InstaPay
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-row summary-total">
+
+                            <span>
+                                Total
+                            </span>
+
+                            <strong
+                                id="summaryPrice"
+                            >
+                                ₱13
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PLACE ORDER -->
+
+                    <button
+                        type="button"
+                        class="place-order"
+                        onclick="submitOrder()"
+                    >
+                        PLACE ORDER
+                    </button>
+
+
+
 
 
                 </div>
