@@ -1288,6 +1288,28 @@
         }
 
 
+
+
+        /* =========================================================
+           REFERENCE PHOTO OCR
+        ========================================================= */
+
+        .reference-ocr {
+            margin-top: 12px; padding: 14px; border-radius: 12px;
+            background: rgba(139,92,246,0.045);
+            border: 1px solid rgba(139,92,246,0.12);
+        }
+        .reference-ocr-title { color:#c4b5fd; font-size:10px; font-weight:850; margin-bottom:5px; }
+        .reference-ocr-text { color:#70707b; font-size:9px; line-height:1.6; margin-bottom:10px; }
+        .reference-upload { width:100%; padding:11px 12px; border-radius:10px; border:1px dashed rgba(167,139,250,0.28); background:rgba(255,255,255,0.025); color:#a7a4b8; font-size:10px; cursor:pointer; }
+        .reference-upload::file-selector-button { margin-right:9px; padding:7px 10px; border:1px solid rgba(139,92,246,0.20); border-radius:8px; background:rgba(139,92,246,0.10); color:#c4b5fd; font-size:9px; font-weight:800; cursor:pointer; }
+        .reference-scan-status { display:none; margin-top:9px; color:#8f8f9c; font-size:9px; line-height:1.5; }
+        .reference-scan-status.active { display:block; }
+        .reference-scan-status.success { color:#86efac; }
+        .reference-scan-status.error { color:#fca5a5; }
+        .reference-preview { display:none; width:100%; max-height:220px; margin-top:10px; object-fit:contain; border-radius:10px; border:1px solid rgba(255,255,255,0.07); background:#08080d; }
+        .reference-preview.active { display:block; }
+
         /* =====================================================
            FORM
         ===================================================== */
@@ -4016,19 +4038,15 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
 
                     <div class="reference-box">
 
-                        <label for="referenceNumber">
-                            GCash Reference Number
-                        </label>
-
-                        <input
-                            type="text"
-                            id="referenceNumber"
-                            placeholder="Enter your GCash reference number"
-                            autocomplete="off"
-                        >
-
-                        <div class="reference-help">
-                            Enter the reference number shown on your GCash receipt.
+                        <div class="reference-ocr">
+                            <div class="reference-ocr-title">📷 AUTO-SCAN FROM GCash RECEIPT</div>
+                            <div class="reference-ocr-text">
+                                Upload a screenshot or photo of your GCash receipt.
+                                The reference number will be detected on your device.
+                            </div>
+                            <input type="file" id="referencePhoto" class="reference-upload" accept="image/*">
+                            <div id="referenceScanStatus" class="reference-scan-status" aria-live="polite"></div>
+                            <img id="referencePreview" class="reference-preview" alt="GCash receipt preview">
                         </div>
 
                     </div>
@@ -4272,6 +4290,8 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
     <!-- =========================================================
          JAVASCRIPT
     ========================================================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
     <script>
 
@@ -4755,7 +4775,7 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
             document.getElementById("summaryPrice").textContent = "₱" + Number(price).toLocaleString();
             document.getElementById("qrAmount").textContent = "₱" + Number(price).toLocaleString();
             document.getElementById("robloxUsername").value = "";
-            document.getElementById("referenceNumber").value = "";
+            resetReferenceOcrState();
             document.getElementById("summaryUsername").textContent = "—";
             document.getElementById("remainingStock").style.display = "block";
             resetQrAgeWarning();
@@ -4804,7 +4824,7 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
             document.getElementById("summaryRobux").textContent = gems;
             document.getElementById("summaryPrice").textContent = "₱" + Number(price).toLocaleString();
             document.getElementById("robloxUsername").value = "";
-            document.getElementById("referenceNumber").value = "";
+            resetReferenceOcrState();
             document.getElementById("summaryUsername").textContent = "—";
             document.getElementById("remainingStock").style.display = "none";
             document.getElementById("qrAmount").textContent = "₱" + Number(price).toLocaleString();
@@ -4944,7 +4964,7 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
 
         async function submitOrder() {
             const username = document.getElementById("robloxUsername").value.trim();
-            const reference = document.getElementById("referenceNumber").value.trim();
+            const reference = detectedReferenceNumber.trim();
             const deviceId = getDeviceId();
 
             if (!username) {
@@ -4953,8 +4973,8 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
                 return;
             }
             if (!reference) {
-                alert("Please enter your GCash Reference Number.");
-                document.getElementById("referenceNumber").focus();
+                alert("Please upload your GCash receipt first so the reference number can be detected automatically.");
+                document.getElementById("referencePhoto").focus();
                 return;
             }
             if (!selectedPrice || !selectedProductName) {
@@ -5800,6 +5820,139 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
                 }
             }
         }
+
+
+
+        /* =========================================================
+           FREE CLIENT-SIDE GCash REFERENCE OCR
+        ========================================================= */
+
+        let referenceOcrBusy = false;
+        let detectedReferenceNumber = "";
+
+        function resetReferenceOcrState() {
+            detectedReferenceNumber = "";
+
+            const input = document.getElementById("referencePhoto");
+            const preview = document.getElementById("referencePreview");
+            const status = document.getElementById("referenceScanStatus");
+
+            if (input) {
+                input.value = "";
+                input.disabled = false;
+            }
+
+            if (preview) {
+                const oldUrl = preview.dataset.objectUrl;
+                if (oldUrl) URL.revokeObjectURL(oldUrl);
+                preview.removeAttribute("src");
+                delete preview.dataset.objectUrl;
+                preview.classList.remove("active");
+            }
+
+            if (status) {
+                status.textContent = "";
+                status.className = "reference-scan-status";
+            }
+        }
+
+        function setReferenceScanStatus(message, type) {
+            const status = document.getElementById("referenceScanStatus");
+            if (!status) return;
+            status.textContent = message || "";
+            status.className = "reference-scan-status active" + (type ? " " + type : "");
+        }
+
+        function extractReferenceNumber(text) {
+            let normalized = String(text || "")
+                .replace(/[|]/g, "1")
+                .replace(/[\u2013\u2014]/g, "-")
+                .replace(/\s+/g, " ")
+                .trim();
+
+            if (!normalized) return "";
+
+            // GCash receipts commonly show the reference like:
+            // "Ref No. 0045 469 283232"
+            // OCR may keep those spaces, so capture several numeric groups
+            // after the Ref No./Reference label and join them together.
+            const label = /(?:reference(?:\s*number)?|ref(?:erence)?\s*(?:no|number)|ref\.?\s*no\.?)/i;
+            const labelMatch = normalized.match(label);
+
+            if (labelMatch) {
+                const afterLabel = normalized.slice(labelMatch.index + labelMatch[0].length);
+
+                // First try the exact GCash-style numeric groups.
+                const groups = afterLabel.match(/(?:^|[^0-9])([0-9]{2,8}(?:\s+[0-9]{2,8}){1,5})(?![0-9])/);
+                if (groups && groups[1]) {
+                    const joined = groups[1].replace(/\s+/g, "");
+                    if (joined.length >= 8 && joined.length <= 20) return joined;
+                }
+
+                // Fallback: collect individual numeric chunks shortly after the label.
+                const nearby = afterLabel.slice(0, 80);
+                const chunks = nearby.match(/\d+/g) || [];
+                const joined = chunks.join("");
+                if (joined.length >= 8 && joined.length <= 20) return joined;
+            }
+
+            // Fallback for OCR that removes the label or spaces entirely.
+            const numbers = normalized.match(/\d{8,20}/g) || [];
+            return numbers.length ? numbers.sort((a,b) => b.length - a.length)[0] : "";
+        }
+
+        async function scanReferencePhoto(file) {
+            if (!file || referenceOcrBusy) return;
+            if (!file.type || !file.type.startsWith("image/")) {
+                setReferenceScanStatus("Please select an image file.", "error");
+                return;
+            }
+            const preview = document.getElementById("referencePreview");
+            const input = document.getElementById("referencePhoto");
+            if (preview) {
+                const oldUrl = preview.dataset.objectUrl;
+                if (oldUrl) URL.revokeObjectURL(oldUrl);
+                const objectUrl = URL.createObjectURL(file);
+                preview.src = objectUrl; preview.dataset.objectUrl = objectUrl; preview.classList.add("active");
+            }
+            referenceOcrBusy = true;
+            if (input) input.disabled = true;
+            try {
+                setReferenceScanStatus("Scanning receipt on your device... Please wait.", "");
+                if (typeof Tesseract === "undefined") throw new Error("OCR library could not be loaded.");
+                const result = await Tesseract.recognize(file, "eng", {
+                    logger: function(info) {
+                        if (info && info.status === "recognizing text" && typeof info.progress === "number") {
+                            setReferenceScanStatus("Scanning receipt... " + Math.round(info.progress * 100) + "%", "");
+                        }
+                    }
+                });
+                const detected = extractReferenceNumber(result && result.data ? result.data.text : "");
+                if (!detected) {
+                    detectedReferenceNumber = "";
+                    setReferenceScanStatus("Reference number was not detected. Please try a clearer GCash receipt screenshot.", "error");
+                    return;
+                }
+
+                detectedReferenceNumber = detected;
+                setReferenceScanStatus("✓ Receipt scanned successfully. Reference number detected automatically.", "success");
+            } catch (error) {
+                console.error("Reference OCR error:", error);
+                setReferenceScanStatus("We could not scan this image. Please try a clearer GCash receipt screenshot.", "error");
+            } finally {
+                referenceOcrBusy = false;
+                if (input) input.disabled = false;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const input = document.getElementById("referencePhoto");
+            if (!input) return;
+            input.addEventListener("change", function() {
+                const file = this.files && this.files[0];
+                if (file) scanReferencePhoto(file);
+            });
+        });
 
 </script>
 
