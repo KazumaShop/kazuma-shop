@@ -14,7 +14,7 @@
 
     <meta
         name="description"
-        content="Kazuma Shop - Roblox Robux & Pet Simulator 99 Gems"
+        content="Kazuma Shop - Roblox Robux, Pet Simulator 99 Gems & Blox Fruits"
     >
 
     <style>
@@ -684,6 +684,119 @@
 
         .product-category.active {
             display: block;
+        }
+
+
+        /* =====================================================
+           BLOX FRUITS SUB TABS + SEARCH
+        ===================================================== */
+
+        .blox-subtabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 0 16px;
+            padding: 5px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .blox-subtab {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid transparent;
+            border-radius: 9px;
+            background: transparent;
+            color: #777783;
+            font-size: 9px;
+            font-weight: 850;
+            letter-spacing: .4px;
+            transition: .2s ease;
+        }
+
+        .blox-subtab:hover {
+            color: #c4b5fd;
+            background: rgba(139,92,246,0.06);
+        }
+
+        .blox-subtab.active {
+            color: #ffffff;
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            border-color: rgba(167,139,250,0.20);
+            box-shadow: 0 8px 24px rgba(99,102,241,0.14);
+        }
+
+        .blox-search-wrap {
+            position: relative;
+            margin: 0 0 18px;
+        }
+
+        .blox-search-input {
+            width: 100%;
+            padding: 12px 42px 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.035);
+            color: #ffffff;
+            font-size: 11px;
+            outline: none;
+            transition: .2s ease;
+        }
+
+        .blox-search-input::placeholder {
+            color: #777783;
+        }
+
+        .blox-search-input:focus {
+            border-color: rgba(139,92,246,0.55);
+            box-shadow: 0 0 0 3px rgba(139,92,246,0.08);
+        }
+
+        .blox-search-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777783;
+            font-size: 13px;
+            pointer-events: none;
+        }
+
+        .blox-no-results {
+            display: none;
+            padding: 24px 16px;
+            text-align: center;
+            color: #777783;
+            font-size: 11px;
+            border: 1px dashed rgba(255,255,255,0.08);
+            border-radius: 14px;
+            margin-top: 4px;
+        }
+
+        .blox-product-card .package-icon {
+            font-size: 20px;
+        }
+
+
+        /* Blox Fruits icons */
+        .blox-fruit-icon {
+            width: 36px;
+            height: 36px;
+            display: block;
+            object-fit: contain;
+        }
+
+
+        @media (max-width: 600px) {
+            .blox-subtabs {
+                gap: 5px;
+            }
+
+            .blox-subtab {
+                padding: 10px 6px;
+                font-size: 8px;
+            }
         }
 
         .gems-note {
@@ -2988,6 +3101,17 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
     .navbar{padding:12px 16px}.brand-name{font-size:18px}.hero{padding:76px 18px 44px}.hero h1{letter-spacing:-3px}.shop{padding:0 14px 70px}.section-heading{border-radius:20px 20px 0 0}.product-tabs{border-radius:0 0 16px 16px}.username-history{padding:26px 18px}.modal-box{padding:20px;border-radius:22px}
 }
 
+
+/* Blox Fruits product icon images */
+.blox-product-icon img,
+.blox-category .package-icon img {
+    display: block;
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    margin: 0 auto;
+}
+
 </style>
 
 </head>
@@ -3075,7 +3199,7 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
             </h2>
 
             <p>
-                Choose Robux or PS99 Gems and select your package.
+                Choose Robux, PS99 Gems, or Blox Fruits and select your product.
             </p>
 
             <div
@@ -3108,6 +3232,15 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
                 onclick="switchProductCategory('gems')"
             >
                 PET SIM 99 GEMS
+            </button>
+
+            <button
+                type="button"
+                class="product-tab"
+                id="bloxTab"
+                onclick="switchProductCategory('blox')"
+            >
+                BLOX FRUITS
             </button>
 
         </div>
@@ -3716,6 +3849,760 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
         </div>
 
 
+
+        <div class="product-category" id="bloxCategory">
+
+            <div class="blox-subtabs" role="tablist" aria-label="Blox Fruits categories">
+                <button type="button" class="blox-subtab active" id="bloxAllTab" onclick="switchBloxCategory('all')">ALL</button>
+                <button type="button" class="blox-subtab" id="bloxFruitsTab" onclick="switchBloxCategory('fruits')">FRUITS</button>
+                <button type="button" class="blox-subtab" id="bloxGamePassTab" onclick="switchBloxCategory('gamepass')">GAME PASS</button>
+            </div>
+
+            <div class="blox-search-wrap">
+                <input
+                    type="search"
+                    id="bloxSearchInput"
+                    class="blox-search-input"
+                    placeholder="Search Blox Fruits..."
+                    autocomplete="off"
+                    oninput="filterBloxProducts()"
+                >
+                <span class="blox-search-icon">⌕</span>
+            </div>
+
+            <p class="gems-note">Blox Fruits — choose a fruit or game pass, then search if needed.</p>
+
+            <div class="packages" id="bloxProducts">
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Rocket%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23ef4444%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f97316%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ER%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Rocket Fruit"></div>
+                            <div class="robux">Rocket</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱28</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Rocket', 28)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Spin%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23a855f7%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23ec4899%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ES%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Spin Fruit"></div>
+                            <div class="robux">Spin</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱42</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Spin', 42)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Blade%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%2394a3b8%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23475569%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EB%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Blade Fruit"></div>
+                            <div class="robux">Blade</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱55</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Blade', 55)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Spring%20Fruit%22%3E%3Cdefs%3E%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23f9a8d4%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23ec4899%22%2F%3E%3C%2FradialGradient%3E%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ES%3C%2Ftext%3E%3C%2Fsvg%3E" alt="Spring Fruit"></div>
+                            <div class="robux">Spring</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱99</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Spring', 99)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Bomb%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23111827%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23ef4444%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EB%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Bomb Fruit"></div>
+                            <div class="robux">Bomb</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱121</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Bomb', 121)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Smoke%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23cbd5e1%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2364748b%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ES%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Smoke Fruit"></div>
+                            <div class="robux">Smoke</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱138</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Smoke', 138)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Spike%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2315803d%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ES%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Spike Fruit"></div>
+                            <div class="robux">Spike</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱209</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Spike', 209)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Flame%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23f97316%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23ef4444%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EF%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Flame Fruit"></div>
+                            <div class="robux">Flame</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱303</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Flame', 303)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Ice%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%2367e8f9%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%233b82f6%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EI%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Ice Fruit"></div>
+                            <div class="robux">Ice</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱413</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Ice', 413)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Sand%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23fbbf24%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23d97706%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ES%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Sand Fruit"></div>
+                            <div class="robux">Sand</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱468</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Sand', 468)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Dark%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%237c3aed%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23111827%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ED%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Dark Fruit"></div>
+                            <div class="robux">Dark</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱523</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Dark', 523)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Eagle%20Fruit%22%3E%3Cdefs%3E%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23f59e0b%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2392400e%22%2F%3E%3C%2FradialGradient%3E%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EE%3C%2Ftext%3E%3C%2Fsvg%3E" alt="Eagle Fruit"></div>
+                            <div class="robux">Eagle</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱537</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Eagle', 537)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Diamond%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%2367e8f9%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%232563eb%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ED%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Diamond Fruit"></div>
+                            <div class="robux">Diamond</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱550</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Diamond', 550)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Light%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23fef08a%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f59e0b%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EL%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Light Fruit"></div>
+                            <div class="robux">Light</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱605</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Light', 605)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Rubber%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23f43f5e%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23ec4899%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ER%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Rubber Fruit"></div>
+                            <div class="robux">Rubber</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱660</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Rubber', 660)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Ghost%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23e5e7eb%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23a78bfa%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EG%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Ghost Fruit"></div>
+                            <div class="robux">Ghost</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱702</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Ghost', 702)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Magma%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23ef4444%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%237f1d1d%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EM%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Magma Fruit"></div>
+                            <div class="robux">Magma</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱715</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Magma', 715)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Quake%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23f8fafc%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2364748b%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EQ%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Quake Fruit"></div>
+                            <div class="robux">Quake</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱825</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Quake', 825)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Buddha%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23f59e0b%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23ca8a04%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EB%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Buddha Fruit"></div>
+                            <div class="robux">Buddha</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱908</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Buddha', 908)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Love%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23fb7185%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23ec4899%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3E%E2%99%A5%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Love Fruit"></div>
+                            <div class="robux">Love</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱935</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Love', 935)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Creation%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23c084fc%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%236366f1%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EC%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Creation Fruit"></div>
+                            <div class="robux">Creation</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱962</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Creation', 962)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Spider%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23ef4444%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23111827%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ES%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Spider Fruit"></div>
+                            <div class="robux">Spider</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱990</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Spider', 990)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Sound%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%2322d3ee%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%237c3aed%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ES%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Sound Fruit"></div>
+                            <div class="robux">Sound</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,045</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Sound', 1045)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Phoenix%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23f97316%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23dc2626%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EP%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Phoenix Fruit"></div>
+                            <div class="robux">Phoenix</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,100</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Phoenix', 1100)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Portal%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%2322d3ee%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%238b5cf6%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EP%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Portal Fruit"></div>
+                            <div class="robux">Portal</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,100</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Portal', 1100)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Lightning%20Fruit%22%3E%3Cdefs%3E%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23fde047%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23eab308%22%2F%3E%3C%2FradialGradient%3E%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EL%3C%2Ftext%3E%3C%2Fsvg%3E" alt="Lightning Fruit"></div>
+                            <div class="robux">Lightning</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,155</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Lightning', 1155)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Pain%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23fb7185%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%237f1d1d%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EP%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Pain Fruit"></div>
+                            <div class="robux">Pain</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,210</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Pain', 1210)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Blizzard%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23e0f2fe%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2360a5fa%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EB%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Blizzard Fruit"></div>
+                            <div class="robux">Blizzard</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,237</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Blizzard', 1237)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Gravity%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%238b5cf6%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23312e81%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EG%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Gravity Fruit"></div>
+                            <div class="robux">Gravity</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,265</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Gravity', 1265)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22T-Rex%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%2384cc16%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23166534%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ET%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="T-Rex Fruit"></div>
+                            <div class="robux">T-Rex</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,292</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('T-Rex', 1292)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Mammoth%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23a16207%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2378350f%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EM%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Mammoth Fruit"></div>
+                            <div class="robux">Mammoth</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,292</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Mammoth', 1292)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Dough%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23fbbf24%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f59e0b%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ED%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Dough Fruit"></div>
+                            <div class="robux">Dough</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,320</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Dough', 1320)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Shadow%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%234c1d95%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23020617%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ES%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Shadow Fruit"></div>
+                            <div class="robux">Shadow</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,333</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Shadow', 1333)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Venom%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23a3e635%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23581c87%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EV%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Venom Fruit"></div>
+                            <div class="robux">Venom</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,333</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Venom', 1333)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Gas%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23a3e635%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2316a34a%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EG%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Gas Fruit"></div>
+                            <div class="robux">Gas</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,375</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Gas', 1375)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Spirit%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23f59e0b%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23ec4899%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ES%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Spirit Fruit"></div>
+                            <div class="robux">Spirit</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,402</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Spirit', 1402)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Tiger%20Fruit%22%3E%3Cdefs%3E%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23fb923c%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23ea580c%22%2F%3E%3C%2FradialGradient%3E%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3ET%3C%2Ftext%3E%3C%2Fsvg%3E" alt="Tiger Fruit"></div>
+                            <div class="robux">Tiger</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,650</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Tiger', 1650)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Yeti%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23f8fafc%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2360a5fa%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EY%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Yeti Fruit"></div>
+                            <div class="robux">Yeti</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,650</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Yeti', 1650)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Magnet%20Fruit%22%3E%3Cdefs%3E%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23c084fc%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%237c3aed%22%2F%3E%3C%2FradialGradient%3E%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E" alt="Magnet Fruit"></div>
+                            <div class="robux">Magnet</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,925</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Magnet', 1925)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Kitsune%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23f97316%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%237c3aed%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3E%E7%8B%90%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Kitsune Fruit"></div>
+                            <div class="robux">Kitsune</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱2,200</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Kitsune', 2200)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Control%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23f472b6%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%237e22ce%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3EC%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Control Fruit"></div>
+                            <div class="robux">Control</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱2,200</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Control', 2200)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="fruit">
+                        <div class="package-content">
+                            <div class="package-icon"><img class="blox-fruit-icon" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%20role%3D%22img%22%20aria-label%3D%22Dragon%20Fruit%22%3E%0A%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22g%22%20cx%3D%2232%25%22%20cy%3D%2225%25%22%20r%3D%2278%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%22.45%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22.28%22%20stop-color%3D%22%23ef4444%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23991b1b%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3Cfilter%20id%3D%22s%22%3E%3CfeDropShadow%20dx%3D%220%22%20dy%3D%223%22%20stdDeviation%3D%223%22%20flood-opacity%3D%22.35%22%2F%3E%3C%2Ffilter%3E%0A%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M39%2018c-2-7%201-11%207-14%22%20fill%3D%22none%22%20stroke%3D%22%2386efac%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M43%2012c7-5%2014-3%2017%202-7%205-13%205-17-2Z%22%20fill%3D%22%2322c55e%22%2F%3E%0A%20%20%20%20%20%20%3Cpath%20d%3D%22M40%2018C21%2015%2010%2028%2012%2047c2%2018%2014%2027%2028%2027s26-9%2028-27c2-19-9-32-28-29Z%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22url%28%23g%29%22%20filter%3D%22url%28%23s%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2229%22%20cy%3D%2231%22%20rx%3D%229%22%20ry%3D%226%22%20fill%3D%22%23fff%22%20opacity%3D%22.22%22%20transform%3D%22rotate%28-28%2029%2031%29%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2240%22%20y%3D%2252%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2216%22%20font-weight%3D%22900%22%0A%20%20%20%20%20%20%20%20%20%20%20%20fill%3D%22%23fff%22%20opacity%3D%22.9%22%3E%F0%9F%90%89%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="Dragon Fruit"></div>
+                            <div class="robux">Dragon</div>
+                            <div class="description">Blox Fruits • Fruit</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱2,750</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Dragon', 2750)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+<div class="package blox-product-card" data-blox-type="gamepass">
+                        <div class="package-content">
+                            <div class="package-icon">🎟️</div>
+                            <div class="robux">2x Boss Drop</div>
+                            <div class="description">Blox Fruits • Game Pass</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱193</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('2x Boss Drop', 193)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="gamepass">
+                        <div class="package-content">
+                            <div class="package-icon">🎟️</div>
+                            <div class="robux">Fast Boats</div>
+                            <div class="description">Blox Fruits • Game Pass</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱193</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Fast Boats', 193)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="gamepass">
+                        <div class="package-content">
+                            <div class="package-icon">🎟️</div>
+                            <div class="robux">2x Money</div>
+                            <div class="description">Blox Fruits • Game Pass</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱247</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('2x Money', 247)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="gamepass">
+                        <div class="package-content">
+                            <div class="package-icon">🎟️</div>
+                            <div class="robux">2x Mastery</div>
+                            <div class="description">Blox Fruits • Game Pass</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱247</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('2x Mastery', 247)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="gamepass">
+                        <div class="package-content">
+                            <div class="package-icon">🎟️</div>
+                            <div class="robux">Dark Blade</div>
+                            <div class="description">Blox Fruits • Game Pass</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱660</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Dark Blade', 660)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="package blox-product-card" data-blox-type="gamepass">
+                        <div class="package-content">
+                            <div class="package-icon">🎟️</div>
+                            <div class="robux">Fruit Notifier</div>
+                            <div class="description">Blox Fruits • Game Pass</div>
+                            <div class="package-bottom">
+                                <div>
+                                    <div class="price-label">PRICE</div>
+                                    <div class="price">₱1,485</div>
+                                </div>
+                                <button class="buy" type="button" onclick="openPurchaseBlox('Fruit Notifier', 1485)">BUY NOW</button>
+                            </div>
+                        </div>
+                    </div>
+
+                                </div>
+
+            <div class="blox-no-results" id="bloxNoResults">
+                No Blox Fruits products found.
+            </div>
+
+        </div>
+
+
         <!-- =====================================================
              USERNAME TRANSACTION TRACKING
         ====================================================== -->
@@ -4280,6 +5167,7 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
         let selectedProductName = "";
         let currentStock = null;
         let currentGemsStock = null;
+        let bloxFruitsAvailable = null;
 
         function formatGemsStock(value) {
             const number = Number(value);
@@ -4654,45 +5542,177 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
             }
         }
 
+        async function loadBloxStatus() {
+            try {
+                const response = await fetch(
+                    APPS_SCRIPT_URL +
+                    "?action=bloxStatus&t=" +
+                    Date.now(),
+                    { cache: "no-store" }
+                );
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.message || "Unable to load Blox Fruits status.");
+                }
+
+                bloxFruitsAvailable = data.bloxStatus === "ON";
+                updateBloxAvailability();
+            } catch (error) {
+                console.error("Blox Fruits status error:", error);
+                bloxFruitsAvailable = null;
+                updateBloxAvailability();
+            }
+        }
+
+        function updateBloxAvailability() {
+            const bloxTab = document.getElementById("bloxTab");
+            const bloxCategory = document.getElementById("bloxCategory");
+
+            if (!bloxTab) return;
+
+            if (bloxFruitsAvailable === false) {
+                bloxTab.disabled = true;
+                bloxTab.setAttribute("aria-disabled", "true");
+                bloxTab.title = "Blox Fruits is currently unavailable";
+                bloxTab.textContent = "BLOX FRUITS — OFF";
+
+                if (bloxCategory && bloxCategory.classList.contains("active")) {
+                    switchProductCategory("robux");
+                }
+
+                return;
+            }
+
+            bloxTab.disabled = false;
+            bloxTab.removeAttribute("aria-disabled");
+            bloxTab.title = "Blox Fruits";
+            bloxTab.textContent = "BLOX FRUITS";
+        }
+
         /* =========================================================
            PRODUCT CATEGORY SWITCH
         ========================================================= */
 
         function switchProductCategory(category) {
+            if (category === "blox" && bloxFruitsAvailable === false) {
+                return;
+            }
+
             const robuxCategory = document.getElementById("robuxCategory");
             const gemsCategory = document.getElementById("gemsCategory");
+            const bloxCategory = document.getElementById("bloxCategory");
+
             const robuxTab = document.getElementById("robuxTab");
             const gemsTab = document.getElementById("gemsTab");
+            const bloxTab = document.getElementById("bloxTab");
 
-            if (!robuxCategory || !gemsCategory || !robuxTab || !gemsTab) return;
+            if (
+                !robuxCategory || !gemsCategory || !bloxCategory ||
+                !robuxTab || !gemsTab || !bloxTab
+            ) return;
 
+            const showRobux = category === "robux";
             const showGems = category === "gems";
+            const showBlox = category === "blox";
 
-            robuxCategory.classList.toggle("active", !showGems);
+            robuxCategory.classList.toggle("active", showRobux);
             gemsCategory.classList.toggle("active", showGems);
-            robuxTab.classList.toggle("active", !showGems);
+            bloxCategory.classList.toggle("active", showBlox);
+
+            robuxTab.classList.toggle("active", showRobux);
             gemsTab.classList.toggle("active", showGems);
+            bloxTab.classList.toggle("active", showBlox);
 
             const stockStatus = document.getElementById("stockStatus");
             if (stockStatus) {
-                stockStatus.style.display = "inline-flex";
+                stockStatus.style.display = showBlox ? "none" : "inline-flex";
             }
 
-            selectedProductType = showGems ? "PS99 Gems" : "Robux";
-            updateStockStatusForCategory();
-            updatePackageButtons();
+            if (showBlox) {
+                selectedProductType = "Blox Fruits";
+                filterBloxProducts();
+            } else {
+                selectedProductType = showGems ? "PS99 Gems" : "Robux";
+                updateStockStatusForCategory();
+                updatePackageButtons();
+                updateRemainingStock();
+            }
 
             const sectionTitle = document.getElementById("productSectionTitle");
             const sectionDescription = document.getElementById("productSectionDescription");
 
             if (sectionTitle) {
                 sectionTitle.textContent =
-                    "Robux & Pet Simulator 99 Gems";
+                    showBlox
+                        ? "Robux, Pet Simulator 99 Gems & Blox Fruits"
+                        : "Robux & Pet Simulator 99 Gems";
             }
 
             if (sectionDescription) {
                 sectionDescription.textContent =
-                    "Choose Robux or PS99 Gems and select your package.";
+                    showBlox
+                        ? "Choose a Blox Fruits category and search for your product."
+                        : "Choose Robux or PS99 Gems and select your package.";
+            }
+        }
+
+        function switchBloxCategory(category) {
+            const allTab = document.getElementById("bloxAllTab");
+            const fruitsTab = document.getElementById("bloxFruitsTab");
+            const gamePassTab = document.getElementById("bloxGamePassTab");
+
+            if (!allTab || !fruitsTab || !gamePassTab) return;
+
+            allTab.classList.toggle("active", category === "all");
+            fruitsTab.classList.toggle("active", category === "fruits");
+            gamePassTab.classList.toggle("active", category === "gamepass");
+
+            filterBloxProducts(category);
+        }
+
+        function filterBloxProducts(forcedCategory) {
+            const searchInput = document.getElementById("bloxSearchInput");
+            const products = document.querySelectorAll("#bloxProducts .blox-product-card");
+            const noResults = document.getElementById("bloxNoResults");
+
+            if (!searchInput || !products.length) return;
+
+            let category = forcedCategory;
+
+            if (!category) {
+                const activeTab = document.querySelector("#bloxCategory .blox-subtab.active");
+                category =
+                    activeTab && activeTab.id === "bloxFruitsTab"
+                        ? "fruits"
+                        : activeTab && activeTab.id === "bloxGamePassTab"
+                            ? "gamepass"
+                            : "all";
+            }
+
+            const query = searchInput.value.trim().toLowerCase();
+            let visibleCount = 0;
+
+            products.forEach(function(card) {
+                const type = card.getAttribute("data-blox-type") || "";
+                const name = (card.querySelector(".robux")?.textContent || "").toLowerCase();
+                const description = (card.querySelector(".description")?.textContent || "").toLowerCase();
+
+                const categoryMatch = category === "all" || (category === "fruits" ? type === "fruit" : type === category);
+                const searchMatch =
+                    !query ||
+                    name.includes(query) ||
+                    description.includes(query);
+
+                const visible = categoryMatch && searchMatch;
+                card.style.display = visible ? "" : "none";
+
+                if (visible) visibleCount++;
+            });
+
+            if (noResults) {
+                noResults.style.display = visibleCount === 0 ? "block" : "none";
             }
         }
 
@@ -4793,6 +5813,47 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
             document.getElementById("selectedPrice").textContent = "₱" + Number(price).toLocaleString();
             document.getElementById("summaryProductLabel").textContent = "PS99 Gems";
             document.getElementById("summaryRobux").textContent = gems;
+            document.getElementById("summaryPrice").textContent = "₱" + Number(price).toLocaleString();
+            document.getElementById("robloxUsername").value = "";
+            resetReferenceOcrState();
+            document.getElementById("summaryUsername").textContent = "—";
+            document.getElementById("remainingStock").style.display = "none";
+            document.getElementById("qrAmount").textContent = "₱" + Number(price).toLocaleString();
+            resetQrAgeWarning();
+            document.getElementById("purchaseModal").classList.add("active");
+        }
+
+        /* =========================================================
+           OPEN BLOX FRUITS PURCHASE
+        ========================================================= */
+
+        function openPurchaseBlox(itemName, price) {
+            if (bloxFruitsAvailable === false) {
+                alert("Blox Fruits is currently unavailable.");
+                return;
+            }
+
+            getDeviceId();
+
+            if (isOrderOnCooldown()) {
+                const remaining = Math.max(0, getCooldownEnd() - Date.now());
+                startOrderCooldown(remaining);
+                alert(
+                    "This device is still on cooldown.\n\n" +
+                    "Please wait " + formatCooldown(remaining) + " before placing another order."
+                );
+                return;
+            }
+
+            selectedRobux = 1;
+            selectedPrice = Number(price);
+            selectedProductType = "Blox Fruits";
+            selectedProductName = itemName;
+
+            document.getElementById("selectedRobux").textContent = itemName;
+            document.getElementById("selectedPrice").textContent = "₱" + Number(price).toLocaleString();
+            document.getElementById("summaryProductLabel").textContent = "Blox Fruits";
+            document.getElementById("summaryRobux").textContent = itemName;
             document.getElementById("summaryPrice").textContent = "₱" + Number(price).toLocaleString();
             document.getElementById("robloxUsername").value = "";
             resetReferenceOcrState();
@@ -5682,6 +6743,33 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
 
             }
 
+            /*
+             * BLOX FRUITS:
+             * Show a Blox Fruits-specific warning.
+             */
+            else if (selectedProductType === "Blox Fruits") {
+
+                if (warningIcon) {
+                    warningIcon.textContent = "!";
+                }
+
+                if (warningTitle) {
+                    warningTitle.textContent =
+                        "MAKE SURE YOU ARE PLAYING BLOX FRUITS BEFORE BUYING";
+                }
+
+                if (warningText) {
+                    warningText.textContent =
+                        "Please make sure you are playing Blox Fruits before buying.";
+                }
+
+                if (warningButton) {
+                    warningButton.textContent =
+                        "I UNDERSTAND — SHOW QR CODE";
+                }
+
+            }
+
             if (warning) {
                 warning.style.display = "block";
             }
@@ -6097,12 +7185,16 @@ footer{background:rgba(3,4,8,.65);border-top-color:rgba(255,255,255,.07)}
 
         document.addEventListener("DOMContentLoaded", function() {
             const input = document.getElementById("referencePhoto");
-            if (!input) return;
 
-            input.addEventListener("change", function() {
-                const file = this.files && this.files[0];
-                if (file) scanReferencePhoto(file);
-            });
+            if (input) {
+                input.addEventListener("change", function() {
+                    const file = this.files && this.files[0];
+                    if (file) scanReferencePhoto(file);
+                });
+            }
+
+            loadBloxStatus();
+            setInterval(loadBloxStatus, 30000);
         });
 
 </script>
